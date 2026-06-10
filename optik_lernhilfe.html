@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optische Phänomene – Kapitel 1 Lernhilfe</title>
+<style>
+  :root {
+    --sky: #1B5E8A;
+    --sky-light: #3A87C4;
+    --sky-pale: #D6EAF8;
+    --sky-mist: #EAF4FB;
+    --amber: #E08F30;
+    --amber-light: #FAD99A;
+    --white: #FFFFFF;
+    --ink: #1A1A2E;
+    --ink-soft: #3B4263;
+    --line: #CADDE8;
+    --green: #2E7D60;
+    --green-light: #D5EFE4;
+    --red: #B03A2E;
+    --red-light: #FADBD8;
+    --pill-r: 6px;
+    --shadow: 0 2px 12px rgba(27,94,138,0.10);
+    --shadow-card: 0 4px 24px rgba(27,94,138,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: #F0F6FA;
+    color: var(--ink);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--sky) 0%, #0D3B63 100%);
+    color: #fff;
+    padding: 40px 32px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 40%;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .header-label {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--amber-light);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  header h1 {
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  header p {
+    font-size: 15px;
+    opacity: 0.82;
+    max-width: 520px;
+  }
+  /* ── NAV TABS ── */
+  .tab-bar {
+    display: flex;
+    gap: 6px;
+    padding: 16px 32px 0;
+    background: #fff;
+    border-bottom: 2px solid var(--line);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab-btn {
+    padding: 9px 18px;
+    border: none;
+    background: transparent;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+    border-radius: var(--pill-r) var(--pill-r) 0 0;
+  }
+  .tab-btn:hover { color: var(--sky); }
+  .tab-btn.active { color: var(--sky); border-bottom-color: var(--sky); background: var(--sky-mist); }
+  /* ── PANELS ── */
+  .panel { display: none; padding: 28px 32px 48px; max-width: 900px; margin: 0 auto; }
+  .panel.active { display: block; }
+  /* ── SECTION CARD ── */
+  .section-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .section-header {
+    background: var(--sky);
+    color: #fff;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-num {
+    background: rgba(255,255,255,0.22);
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .section-body { padding: 20px; }
+  /* ── CONCEPT GRID ── */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+    margin-top: 8px;
+  }
+  .concept-card {
+    background: var(--sky-mist);
+    border: 1.5px solid var(--line);
+    border-radius: var(--pill-r);
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.2s;
+  }
+  .concept-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--sky-light); }
+  .concept-card.open { background: var(--sky-pale); border-color: var(--sky); }
+  .concept-term {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--sky);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .concept-term::after { content: '▾'; font-size: 11px; opacity: 0.6; margin-left: auto; transition: transform 0.2s; }
+  .concept-card.open .concept-term::after { transform: rotate(180deg); }
+  .concept-def {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    display: none;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--line);
+  }
+  .concept-card.open .concept-def { display: block; }
+  /* ── FORMULA BOX ── */
+  .formula-box {
+    background: linear-gradient(135deg, #0D3B63, var(--sky));
+    color: #fff;
+    border-radius: var(--pill-r);
+    padding: 16px 20px;
+    margin: 12px 0;
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  .formula-label {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--amber-light);
+    margin-bottom: 6px;
+  }
+  /* ── DIAGRAM ── */
+  .diagram-wrap { margin: 14px 0; }
+  svg.optic-diag { width: 100%; max-width: 540px; display: block; margin: 0 auto; }
+  /* ── INFO ROW ── */
+  .info-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-badge {
+    background: var(--amber);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 7px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .info-text { font-size: 13.5px; color: var(--ink-soft); }
+  /* ── QUIZ ── */
+  .quiz-question { margin-bottom: 28px; }
+  .quiz-q-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 12px;
+    line-height: 1.45;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    padding: 11px 16px;
+    background: var(--sky-mist);
+    border: 2px solid var(--line);
+    border-radius: var(--pill-r);
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--ink-soft);
+    text-align: left;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .quiz-opt:hover { background: var(--sky-pale); border-color: var(--sky-light); }
+  .quiz-opt.correct { background: var(--green-light); border-color: var(--green); color: var(--green); font-weight: 600; }
+  .quiz-opt.wrong { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .quiz-opt.disabled { cursor: default; opacity: 0.7; }
+  .quiz-feedback {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: var(--pill-r);
+    font-size: 13.5px;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct-fb { background: var(--green-light); color: var(--green); border: 1px solid var(--green); }
+  .quiz-feedback.wrong-fb { background: var(--red-light); color: var(--red); border: 1px solid var(--red); }
+  .quiz-progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .progress-bar { height: 6px; background: var(--line); border-radius: 3px; flex: 1; margin: 0 14px; }
+  .progress-fill { height: 100%; background: var(--sky); border-radius: 3px; transition: width 0.4s; }
+  /* ── GLOSSARY ── */
+  .glossary-search {
+    width: 100%;
+    padding: 11px 16px;
+    border: 2px solid var(--line);
+    border-radius: var(--pill-r);
+    font-size: 14px;
+    margin-bottom: 18px;
+    outline: none;
+    transition: border-color 0.2s;
+    background: var(--sky-mist);
+  }
+  .glossary-search:focus { border-color: var(--sky-light); background: #fff; }
+  .glossary-term-row {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: flex-start;
+  }
+  .glossary-term { font-weight: 700; color: var(--sky); min-width: 170px; font-size: 14px; }
+  .glossary-def { font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; }
+  .glossary-term-row.hidden { display: none; }
+  /* ── LIGHT PATH SVG ── */
+  .anim-btn {
+    background: var(--sky);
+    color: #fff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: var(--pill-r);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    display: block;
+    transition: background 0.2s;
+  }
+  .anim-btn:hover { background: var(--sky-light); }
+  /* ── TABLE ── */
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 8px 0; }
+  .mini-table th { background: var(--sky); color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
+  .mini-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  .mini-table tr:nth-child(even) td { background: var(--sky-mist); }
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header { padding: 28px 18px 24px; }
+    .tab-bar { padding: 12px 14px 0; }
+    .panel { padding: 20px 14px 40px; }
+    .concept-grid { grid-template-columns: 1fr; }
+    .glossary-term { min-width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">NaTech 9 · Kapitel 1</div>
+  <h1>Optische Phänomene erkunden</h1>
+  <p>Interaktive Lernhilfe für alle wichtigen Konzepte, Gesetze und Fachbegriffe rund um Licht, Reflexion und Brechung.</p>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showPanel('konzepte')">📚 Konzepte</button>
+  <button class="tab-btn" onclick="showPanel('diagramme')">🔆 Diagramme</button>
+  <button class="tab-btn" onclick="showPanel('formeln')">🧮 Formeln</button>
+  <button class="tab-btn" onclick="showPanel('glossar')">📖 Glossar</button>
+  <button class="tab-btn" onclick="showPanel('quiz')">✅ Quiz</button>
+</div>
+
+<!-- ══════════════ KONZEPTE PANEL ══════════════ -->
+<div id="panel-konzepte" class="panel active">
+
+  <!-- 1.2 Reflexion -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      Reflexion – Ein Blick in die Spiegelwelt (1.2)
+    </div>
+    <div class="section-body">
+      <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:14px;">Klicke auf einen Begriff um seine Erklärung zu sehen.</p>
+      <div class="concept-grid">
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Reflexionsgesetz</div>
+          <div class="concept-def">Einfallswinkel α = Reflexionswinkel α'. Beide Winkel werden gegenüber dem <strong>Lot</strong> gemessen. Das Lot steht senkrecht auf dem Spiegel.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Lot</div>
+          <div class="concept-def">Senkrechte Hilfslinie auf dem Spiegel, durch den Punkt wo der Lichtstrahl auftrifft. Winkel werden immer gegenüber dem Lot gemessen.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Virtuelles Bild</div>
+          <div class="concept-def">Ein Spiegelbild, das nur scheinbar existiert. Das Gehirn verlängert die reflektierten Lichtstrahlen geradlinig nach hinten – der Schnittpunkt ist der virtuelle Bildpunkt P'. Das Spiegelbild befindet sich <em>gleich weit hinter</em> dem Spiegel wie der Gegenstand davor.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Ebener Spiegel</div>
+          <div class="concept-def">Ein völlig gerader (nicht gekrümmter) Spiegel. Das virtuelle Bild ist seitenverkehrt und befindet sich gleich weit hinter dem Spiegel.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Wölbspiegel (Konvexspiegel)</div>
+          <div class="concept-def">Nach aussen gewölbter Spiegel (Zerstreuungsspiegel). Reflektiert Licht in alle Richtungen. Beispiel: Discokugel, Sicherheitsspiegel. Brennpunkt liegt <em>hinter</em> dem Spiegel (virtuell).</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Hohlspiegel (Konkavspiegel)</div>
+          <div class="concept-def">Nach innen gewölbter Spiegel (Sammelspiegel). Sammelt parallele Lichtstrahlen in einem Punkt vor dem Spiegel (Brennpunkt). Beispiel: Kosmetikspiegel, Solarkocher.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Mehrfachreflexion</div>
+          <div class="concept-def">Wenn zwei parallele Spiegel einander gegenüberstehen, wird das Licht unendlich oft zwischen ihnen hin- und hergespiegelt → «Unendlichkeitsspiegel».</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.3 Brechung -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      Lichtbrechung (1.3)
+    </div>
+    <div class="section-body">
+      <div class="concept-grid">
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Brechungsgesetz</div>
+          <div class="concept-def">Beim Übergang in einen <strong>optisch dichteren</strong> Stoff wird der Lichtstrahl <strong>zum Lot hin</strong> gebrochen (Brechungswinkel β &lt; Einfallswinkel α). Beim Übergang in einen dünneren Stoff wird er <strong>vom Lot weg</strong> gebrochen.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Optisch dichter / dünner</div>
+          <div class="concept-def">Je dichter ein Stoff optisch ist, desto stärker verlangsamt er das Licht und desto stärker bricht er es. Beispiel: Glas ist optisch dichter als Wasser, Wasser dichter als Luft.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Brechungswinkel β</div>
+          <div class="concept-def">Winkel zwischen dem gebrochenen Lichtstrahl und dem Lot. Bei Übergang von dünnerem in dichteren Stoff gilt: β &lt; α.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Optische Hebung</div>
+          <div class="concept-def">Ein Gegenstand im Wasser erscheint höher (näher), als er wirklich ist. Ursache: Licht wird beim Übergang von Wasser in Luft vom Lot weg gebrochen. Das Gehirn verlängert die Strahlen geradlinig → Gegenstand wirkt angehoben.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.4 Totalreflexion -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      Totalreflexion (1.4)
+    </div>
+    <div class="section-body">
+      <div class="concept-grid">
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Totalreflexion</div>
+          <div class="concept-def">Tritt auf, wenn Licht aus einem <strong>optisch dichteren</strong> in einen <strong>dünneren</strong> Stoff übergeht und der Einfallswinkel den <strong>Grenzwinkel</strong> überschreitet. Der gesamte Lichtstrahl wird reflektiert – es kommt kein Licht mehr in den zweiten Stoff.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Grenzwinkel (Grenzwinkel der Totalreflexion)</div>
+          <div class="concept-def">Der Einfallswinkel, ab dem die Totalreflexion einsetzt. Bei Plexiglas–Luft ca. 42°. Für Glas–Luft ca. 41°.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Glasfasern</div>
+          <div class="concept-def">Nutzen Totalreflexion, um Licht (und damit Daten) über grosse Distanzen zu leiten. Aufbau: Glasfaserkern (optisch dichter) + Glasfasermantel (optisch dünner) → Licht wird an der Grenzfläche totalreflektiert.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Fata Morgana</div>
+          <div class="concept-def">Luftspiegelung in der Wüste oder auf heissen Strassen. Heisse Luft am Boden ist optisch dünner als kühlere Luft darüber. Licht wird an der heissen Luftschicht totalreflektiert → Spiegelbild des Himmels erscheint als scheinbare Wasserfläche.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Endoskop</div>
+          <div class="concept-def">Medizinisches Gerät (z.B. für Magenspiegelung) mit Glasfaserkabeln. Ein Kabel leitet Licht in den Magen, ein zweites leitet das reflektierte Bild zurück zur Ärztin/zum Arzt.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.5 Linsen -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      Linsen und optische Geräte (1.5)
+    </div>
+    <div class="section-body">
+      <div class="concept-grid">
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Konvexe Linse (Sammellinse)</div>
+          <div class="concept-def">In der Mitte dicker, am Rand dünner. Bündelt parallele Lichtstrahlen im <strong>Brennpunkt F</strong>. Anwendungen: Lupe, Auge, Kamera, Teleskop, Mikroskop.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Konkave Linse (Zerstreuungslinse)</div>
+          <div class="concept-def">In der Mitte dünner, am Rand dicker. Zerstreut Lichtstrahlen. Verwendet in Brillen für Kurzsichtige.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Brennpunkt F und Brennweite f</div>
+          <div class="concept-def">Der <strong>Brennpunkt F</strong> ist der Punkt, in dem parallel einfallende Strahlen nach der Linse zusammentreffen. Die <strong>Brennweite f</strong> ist der Abstand von der Linsenmitte zum Brennpunkt.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Reelles vs. Virtuelles Bild (Linse)</div>
+          <div class="concept-def"><strong>Reelles Bild</strong>: entsteht, wenn der Gegenstand ausserhalb der Brennweite steht. Kann auf einem Schirm aufgefangen werden (umgekehrt, verkleinert oder vergrössert).<br><strong>Virtuelles Bild</strong>: entsteht, wenn der Gegenstand innerhalb der Brennweite steht (Lupe-Prinzip). Vergrössert, aufrecht, nur scheinbar vorhanden.</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Linsengleichung</div>
+          <div class="concept-def">Verknüpft Gegenstandsweite g, Bildweite b und Brennweite f:<br><strong>1/f = 1/g + 1/b</strong><br>Umgeformt: f = (b · g) / (b + g)</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Kamera</div>
+          <div class="concept-def">Aufbau: Lichtstrahlen → Objektiv (Linse/Linsensystem) → Blende → Bildsensor (Speichermedium). Das Objektiv bricht das Licht, die Blende reguliert die Lichtmenge, der Sensor speichert das (reelle, umgekehrte) Bild.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.6 Farbe -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      Spiel von Licht und Farbe (1.6)
+    </div>
+    <div class="section-body">
+      <div class="concept-grid">
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Additive Farbmischung</div>
+          <div class="concept-def">Grundfarben des Lichts: <strong>Rot, Grün, Blau (RGB)</strong>. Rot + Grün = Gelb; Rot + Blau = Magenta; Grün + Blau = Cyan; Rot + Grün + Blau = Weiss. Genutzt in Bildschirmen (RGB-Farbmodell).</div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Lichtspektrum / Zerlegung</div>
+          <div class="concept-def">Weisses Licht besteht aus allen Spektralfarben. Ein Prisma zerlegt weisses Licht, weil blaues Licht stärker gebrochen wird als rotes. <strong>Spektralfarben lassen sich nicht weiter zerlegen.</strong></div>
+        </div>
+        <div class="concept-card" onclick="toggleConcept(this)">
+          <div class="concept-term">Zapfen im Auge</div>
+          <div class="concept-def">Drei Arten von Zapfen in der Netzhaut: empfindlich für Rot, Grün oder Blau. Alle anderen Farben entstehen durch unterschiedlich starke Aktivierung dieser drei Zapfentypen.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════ DIAGRAMME PANEL ══════════════ -->
+<div id="panel-diagramme" class="panel">
+
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">A</div> Reflexionsgesetz – interaktiv</div>
+    <div class="section-body">
+      <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:10px;">Verschiebe den Schieberegler um den Einfallswinkel zu ändern. Beobachte: Einfallswinkel = Reflexionswinkel.</p>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;flex-wrap:wrap;">
+        <label style="font-size:13px;font-weight:600;color:var(--sky);">Einfallswinkel α:</label>
+        <input type="range" id="angleSlider" min="5" max="80" value="40" style="width:180px;" oninput="updateReflection()">
+        <span id="angleVal" style="font-size:14px;font-weight:700;color:var(--sky);">40°</span>
+      </div>
+      <svg id="reflexionSVG" viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;display:block;border-radius:8px;background:#F0F6FA;border:1.5px solid var(--line);">
+        <!-- Mirror -->
+        <rect x="40" y="160" width="340" height="6" rx="2" fill="#5A8DAA"/>
+        <!-- Lot -->
+        <line id="lot" x1="210" y1="10" x2="210" y2="166" stroke="#AAAAAA" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <text x="214" y="22" font-size="10" fill="#888">Lot</text>
+        <!-- Incoming ray -->
+        <line id="inRay" x1="70" y1="20" x2="210" y2="163" stroke="#E08F30" stroke-width="2.5" marker-end="url(#arrowIn)"/>
+        <!-- Reflected ray -->
+        <line id="outRay" x1="210" y1="163" x2="350" y2="20" stroke="#1B5E8A" stroke-width="2.5" marker-end="url(#arrowOut)"/>
+        <!-- Angle arcs -->
+        <path id="arcIn" d="" fill="rgba(224,143,48,0.15)" stroke="#E08F30" stroke-width="1"/>
+        <path id="arcOut" d="" fill="rgba(27,94,138,0.15)" stroke="#1B5E8A" stroke-width="1"/>
+        <!-- Labels -->
+        <text id="lblAlpha" x="185" y="145" font-size="13" font-weight="bold" fill="#E08F30">α</text>
+        <text id="lblAlphaPrime" x="218" y="145" font-size="13" font-weight="bold" fill="#1B5E8A">α'</text>
+        <!-- Mirror label -->
+        <text x="42" y="178" font-size="11" fill="#5A8DAA">Spiegel</text>
+        <!-- Arrow markers -->
+        <defs>
+          <marker id="arrowIn" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#E08F30"/></marker>
+          <marker id="arrowOut" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#1B5E8A"/></marker>
+        </defs>
+        <!-- Incoming label -->
+        <text x="72" y="18" font-size="10" fill="#E08F30">einfallend</text>
+        <text x="310" y="18" font-size="10" fill="#1B5E8A">reflektiert</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">B</div> Lichtbrechung: Übergang Luft → Wasser</div>
+    <div class="section-body">
+      <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:10px;">Ändere den Einfallswinkel. Beachte: Im Wasser wird der Strahl zum Lot hin gebrochen (β &lt; α).</p>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;flex-wrap:wrap;">
+        <label style="font-size:13px;font-weight:600;color:var(--sky);">Einfallswinkel α:</label>
+        <input type="range" id="brechSlider" min="0" max="75" value="40" style="width:180px;" oninput="updateRefraction()">
+        <span id="brechVal" style="font-size:14px;font-weight:700;color:var(--sky);">40°</span>
+        <span style="font-size:13px;color:var(--ink-soft);">→ β = <strong id="brechBeta">30°</strong></span>
+      </div>
+      <svg id="brechSVG" viewBox="0 0 420 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;display:block;border-radius:8px;overflow:hidden;border:1.5px solid var(--line);">
+        <!-- Background -->
+        <rect x="0" y="0" width="420" height="120" fill="#EAF4FB"/>
+        <rect x="0" y="120" width="420" height="140" fill="#B8D8F0"/>
+        <!-- Labels -->
+        <text x="12" y="18" font-size="12" font-weight="bold" fill="#1B5E8A">Luft</text>
+        <text x="12" y="140" font-size="12" font-weight="bold" fill="#0D3B63">Wasser</text>
+        <!-- Boundary -->
+        <line x1="0" y1="120" x2="420" y2="120" stroke="#5A8DAA" stroke-width="2"/>
+        <!-- Lot -->
+        <line x1="210" y1="10" x2="210" y2="250" stroke="#AAA" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <text x="214" y="22" font-size="10" fill="#888">Lot</text>
+        <!-- Incoming -->
+        <line id="bIn" x1="50" y1="20" x2="210" y2="120" stroke="#E08F30" stroke-width="2.5" marker-end="url(#arrowB1)"/>
+        <!-- Refracted -->
+        <line id="bOut" x1="210" y1="120" x2="300" y2="250" stroke="#0D3B63" stroke-width="2.5" marker-end="url(#arrowB2)"/>
+        <!-- Reflected (faint) -->
+        <line id="bRef" x1="210" y1="120" x2="370" y2="20" stroke="#1B5E8A" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+        <!-- Labels -->
+        <text id="bLblA" x="188" y="105" font-size="13" font-weight="bold" fill="#E08F30">α</text>
+        <text id="bLblB" x="218" y="148" font-size="13" font-weight="bold" fill="#0D3B63">β</text>
+        <text x="50" y="18" font-size="10" fill="#E08F30">einfallend</text>
+        <text x="210" y="265" font-size="10" fill="#0D3B63">gebrochen</text>
+        <defs>
+          <marker id="arrowB1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#E08F30"/></marker>
+          <marker id="arrowB2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#0D3B63"/></marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">C</div> Konvexe Linse – Strahlengang</div>
+    <div class="section-body">
+      <svg viewBox="0 0 500 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:560px;display:block;border-radius:8px;background:#F0F6FA;border:1.5px solid var(--line);padding:4px;">
+        <!-- Optical axis -->
+        <line x1="20" y1="90" x2="480" y2="90" stroke="#CCC" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Lens -->
+        <ellipse cx="250" cy="90" rx="10" ry="55" fill="rgba(58,135,196,0.18)" stroke="#3A87C4" stroke-width="2"/>
+        <!-- Focal points -->
+        <circle cx="170" cy="90" r="4" fill="#E08F30"/>
+        <text x="162" y="106" font-size="10" fill="#E08F30">F'</text>
+        <circle cx="330" cy="90" r="4" fill="#E08F30"/>
+        <text x="326" y="106" font-size="10" fill="#E08F30">F</text>
+        <!-- Parallel ray → through F -->
+        <line x1="20" y1="50" x2="250" y2="50" stroke="#E08F30" stroke-width="1.8"/>
+        <line x1="250" y1="50" x2="450" y2="150" stroke="#E08F30" stroke-width="1.8" marker-end="url(#arrowL1)"/>
+        <!-- Center ray (straight) -->
+        <line x1="20" y1="70" x2="450" y2="110" stroke="#2E7D60" stroke-width="1.8" marker-end="url(#arrowL2)"/>
+        <!-- Through F' ray → parallel after -->
+        <line x1="20" y1="130" x2="170" y2="90" stroke="#1B5E8A" stroke-width="1.8" stroke-dasharray="3,2"/>
+        <line x1="170" y1="90" x2="250" y2="90" stroke="#1B5E8A" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="250" y1="90" x2="450" y2="90" stroke="#1B5E8A" stroke-width="1.8" marker-end="url(#arrowL3)"/>
+        <!-- Convergence point approx -->
+        <circle cx="388" cy="118" r="5" fill="rgba(224,143,48,0.5)" stroke="#E08F30" stroke-width="1.5"/>
+        <text x="392" y="116" font-size="10" fill="#E08F30">P'</text>
+        <!-- Labels -->
+        <text x="250" y="17" font-size="11" font-weight="bold" fill="#3A87C4" text-anchor="middle">Konvexe Linse</text>
+        <text x="20" y="170" font-size="10" fill="#E08F30">Parallelstrahl → durch F</text>
+        <text x="230" y="170" font-size="10" fill="#2E7D60">Mittelpunktstrahl</text>
+        <defs>
+          <marker id="arrowL1" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#E08F30"/></marker>
+          <marker id="arrowL2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#2E7D60"/></marker>
+          <marker id="arrowL3" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#1B5E8A"/></marker>
+        </defs>
+      </svg>
+      <div style="margin-top:12px;font-size:13px;color:var(--ink-soft);">
+        <strong>Konstruktionsstrahlen:</strong>
+        <span style="color:#E08F30">■</span> Parallelstrahl (→ durch F nach der Linse) &nbsp;
+        <span style="color:#2E7D60">■</span> Mittelpunktstrahl (unveränderliche Richtung) &nbsp;
+        <span style="color:#1B5E8A">■</span> Brennpunktstrahl (→ parallel nach der Linse)
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════ FORMELN PANEL ══════════════ -->
+<div id="panel-formeln" class="panel">
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">F</div> Wichtige Formeln & Gesetze</div>
+    <div class="section-body">
+      <div class="info-row">
+        <div class="info-badge">Reflexion</div>
+        <div class="info-text"><strong>Reflexionsgesetz:</strong> α = α' &nbsp;&nbsp; (Einfallswinkel = Reflexionswinkel, gemessen zum Lot)</div>
+      </div>
+      <div class="formula-box" style="margin:10px 0 4px;">
+        <div class="formula-label">Reflexionsgesetz</div>
+        α = α'
+      </div>
+
+      <div class="info-row" style="margin-top:18px;">
+        <div class="info-badge">Brechung</div>
+        <div class="info-text"><strong>Brechungsregel:</strong> Dünner → dichter: β &lt; α (zum Lot hin). Dichter → dünner: β &gt; α (vom Lot weg).</div>
+      </div>
+
+      <div class="info-row" style="margin-top:18px;">
+        <div class="info-badge">Linse</div>
+        <div class="info-text"><strong>Linsengleichung</strong> (Brennweite bestimmen):</div>
+      </div>
+      <div class="formula-box">
+        <div class="formula-label">Linsengleichung</div>
+        1/f = 1/g + 1/b &nbsp;&nbsp;→&nbsp;&nbsp; f = (b · g) / (b + g)
+      </div>
+      <p style="font-size:12.5px;color:var(--ink-soft);margin:6px 0 14px 4px;">f = Brennweite &nbsp;|&nbsp; g = Gegenstandsweite &nbsp;|&nbsp; b = Bildweite</p>
+
+      <div class="info-row">
+        <div class="info-badge">Farbe</div>
+        <div class="info-text"><strong>Additive Farbmischung:</strong> Rot + Grün = Gelb; Rot + Blau = Magenta; Grün + Blau = Cyan; R+G+B = Weiss</div>
+      </div>
+
+      <div style="margin-top:20px;">
+        <p style="font-weight:700;font-size:14px;color:var(--sky);margin-bottom:10px;">Linsenkalkulator</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+          <div>
+            <label style="font-size:12px;color:var(--ink-soft);">Gegenstandsweite g (cm)</label><br>
+            <input type="number" id="calcG" placeholder="z.B. 30" style="width:120px;padding:8px;border:2px solid var(--line);border-radius:6px;font-size:14px;" oninput="calcLens()">
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--ink-soft);">Bildweite b (cm)</label><br>
+            <input type="number" id="calcB" placeholder="z.B. 60" style="width:120px;padding:8px;border:2px solid var(--line);border-radius:6px;font-size:14px;" oninput="calcLens()">
+          </div>
+          <div id="calcResult" style="font-size:15px;font-weight:700;color:var(--sky);padding:8px 14px;background:var(--sky-mist);border-radius:6px;border:2px solid var(--line);">f = ?</div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <p style="font-weight:700;font-size:14px;color:var(--sky);margin-bottom:8px;">Beispiel-Messungen (Brennweite experimentell)</p>
+        <table class="mini-table">
+          <thead><tr><th>Messung</th><th>g (cm)</th><th>b (cm)</th><th>f (cm)</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>30.7</td><td>59.0</td><td>20.19</td></tr>
+            <tr><td>2</td><td>35.1</td><td>46.3</td><td>19.97</td></tr>
+            <tr><td>3</td><td>42.5</td><td>37.6</td><td>19.95</td></tr>
+            <tr><td>4</td><td>50.5</td><td>32.8</td><td>19.89</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12.5px;color:var(--ink-soft);margin-top:6px;">Mittelwert: <strong>f = 20.0 cm</strong></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ GLOSSAR PANEL ══════════════ -->
+<div id="panel-glossar" class="panel">
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">G</div> Glossar – Alle Fachbegriffe</div>
+    <div class="section-body">
+      <input type="text" class="glossary-search" placeholder="Fachbegriff suchen …" id="glossSearch" oninput="filterGlossar()">
+      <div id="glossarList">
+        <div class="glossary-term-row"><div class="glossary-term">Additive Farbmischung</div><div class="glossary-def">Mischen von farbigem Licht. Grundfarben: Rot, Grün, Blau. Alle Farben entstehen durch Kombination dieser drei.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Bildweite (b)</div><div class="glossary-def">Abstand von der Linse zum entstehenden Bild auf dem Schirm.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Brechungsgesetz</div><div class="glossary-def">Beim Übergang von einem optisch dünneren in einen dichteren Stoff wird der Lichtstrahl zum Lot hin gebrochen; umgekehrt vom Lot weg.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Brechungswinkel β</div><div class="glossary-def">Winkel zwischen dem gebrochenen Lichtstrahl und dem Lot an der Grenzfläche.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Brennpunkt (F)</div><div class="glossary-def">Der Punkt, in dem parallel einfallende Lichtstrahlen nach dem Durchgang durch eine Sammellinse gebündelt werden.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Brennweite (f)</div><div class="glossary-def">Abstand von der Linsenmitte zum Brennpunkt F.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Ebener Spiegel</div><div class="glossary-def">Vollkommen gerader Spiegel ohne Krümmung. Erzeugt ein virtuelles, seitenverkehrtes Bild gleich weit hinter dem Spiegel.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Einfallswinkel (α)</div><div class="glossary-def">Winkel zwischen dem einfallenden Lichtstrahl und dem Lot.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Endoskop</div><div class="glossary-def">Medizinisches Instrument mit Glasfaserkabeln; nutzt Totalreflexion zur Übertragung von Licht und Bildinformationen in Körperhöhlen.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Fata Morgana</div><div class="glossary-def">Luftspiegelung durch Totalreflexion in heissen Luftschichten nahe dem Boden; erscheint als Wasserfläche.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Gegenstandsweite (g)</div><div class="glossary-def">Abstand des betrachteten Gegenstands von der Linse.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Glasfaser</div><div class="glossary-def">Dünne Glasfaser, die Licht durch Totalreflexion leitet; verwendet in Datenübertragung (Internet) und Medizin.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Grenzwinkel</div><div class="glossary-def">Der Einfallswinkel, ab dem Totalreflexion einsetzt (z.B. Plexiglas→Luft: ca. 42°).</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Hohlspiegel (Konkavspiegel)</div><div class="glossary-def">Nach innen gewölbter Sammelspiegel. Bündelt parallele Strahlen im Brennpunkt vor dem Spiegel.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Konvexe Linse (Sammellinse)</div><div class="glossary-def">In der Mitte dickere Linse, die Lichtstrahlen im Brennpunkt sammelt.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Konkave Linse (Zerstreuungslinse)</div><div class="glossary-def">In der Mitte dünnere Linse, die Lichtstrahlen auseinandertreibt.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Linsengleichung</div><div class="glossary-def">1/f = 1/g + 1/b. Verknüpft Brennweite, Gegenstands- und Bildweite.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Lot</div><div class="glossary-def">Senkrechte Hilfslinie auf einer Grenzfläche oder einem Spiegel; Bezugslinie für alle Winkel.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Optische Hebung</div><div class="glossary-def">Erscheinung, bei der ein im Wasser liegender Gegenstand höher erscheint als er tatsächlich ist.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Optisch dicht / dünn</div><div class="glossary-def">Ein optisch dichterer Stoff bremst das Licht stärker und bricht es zum Lot hin (Luft &lt; Wasser &lt; Glas).</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Pepper's Ghost</div><div class="glossary-def">Illusionstrick mit Spiegelreflexion; erzeugt schwebende Hologramm-Bilder (z.B. Smartphone-Hologramm-Projektor).</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Reflexion</div><div class="glossary-def">Zurückwerfen von Lichtstrahlen an einer Oberfläche.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Reflexionsgesetz</div><div class="glossary-def">Einfallswinkel = Reflexionswinkel (α = α'), beide gemessen zum Lot.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Reflexionswinkel (α')</div><div class="glossary-def">Winkel zwischen dem reflektierten Lichtstrahl und dem Lot.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">RGB-Farbmodell</div><div class="glossary-def">Digitales Farbsystem auf Basis der additiven Mischung von Rot, Grün und Blau; genutzt in Bildschirmen.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Solarkocher</div><div class="glossary-def">Gerät mit Hohlspiegel, das Sonnenstrahlen im Brennpunkt konzentriert um Wasser oder Nahrung zu erhitzen.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Spektralfarben</div><div class="glossary-def">Die Farben des sichtbaren Lichts (Violett, Blau, Cyan, Grün, Gelb, Orange, Rot). Können durch ein Prisma aus weissem Licht gewonnen werden; lassen sich nicht weiter zerlegen.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Totalreflexion</div><div class="glossary-def">Vollständige Reflexion an einer Grenzfläche, wenn Licht von dichter→dünner übergeht und der Einfallswinkel den Grenzwinkel überschreitet.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Virtueller Bildpunkt (P')</div><div class="glossary-def">Scheinbarer Ort eines Bildpunkts, der durch Verlängerung der reflektierten/gebrochenen Strahlen nach hinten entsteht. Existiert nicht wirklich.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Wölbspiegel (Konvexspiegel)</div><div class="glossary-def">Nach aussen gewölbter Zerstreuungsspiegel; Brennpunkt liegt virtuell hinter dem Spiegel.</div></div>
+        <div class="glossary-term-row"><div class="glossary-term">Zapfen (Auge)</div><div class="glossary-def">Farbrezeptoren in der Netzhaut; drei Typen empfindlich für Rot, Grün oder Blau.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ QUIZ PANEL ══════════════ -->
+<div id="panel-quiz" class="panel">
+  <div class="section-card">
+    <div class="section-header"><div class="section-num">Q</div> Wissens-Quiz</div>
+    <div class="section-body">
+      <div class="quiz-progress">
+        <span id="quizCounter">Frage 1 / 10</span>
+        <div class="progress-bar"><div class="progress-fill" id="quizProg" style="width:10%"></div></div>
+        <span id="quizScore">✓ 0</span>
+      </div>
+      <div id="quizContainer"></div>
+      <button class="anim-btn" id="quizNext" onclick="nextQuestion()" style="display:none;">Nächste Frage →</button>
+      <div id="quizEnd" style="display:none;text-align:center;padding:20px;">
+        <p style="font-size:22px;font-weight:800;color:var(--sky);" id="quizFinalText"></p>
+        <p style="color:var(--ink-soft);margin:8px 0 18px;" id="quizFinalSub"></p>
+        <button class="anim-btn" onclick="restartQuiz()" style="margin:0 auto;">Nochmal starten ↺</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── TAB NAVIGATION ──
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── CONCEPTS ──
+function toggleConcept(card) {
+  card.classList.toggle('open');
+}
+
+// ── REFLECTION DIAGRAM ──
+function updateReflection() {
+  const alpha = parseInt(document.getElementById('angleSlider').value);
+  document.getElementById('angleVal').textContent = alpha + '°';
+  const cx = 210, cy = 163;
+  const len = 160;
+  const aRad = alpha * Math.PI / 180;
+  const x1 = cx - len * Math.sin(aRad);
+  const y1 = cy - len * Math.cos(aRad);
+  const x2 = cx + len * Math.sin(aRad);
+  const y2 = cy - len * Math.cos(aRad);
+  document.getElementById('inRay').setAttribute('x1', x1);
+  document.getElementById('inRay').setAttribute('y1', y1);
+  document.getElementById('outRay').setAttribute('x2', x2);
+  document.getElementById('outRay').setAttribute('y2', y2);
+}
+
+// ── REFRACTION DIAGRAM ──
+function updateRefraction() {
+  const alpha = parseInt(document.getElementById('brechSlider').value);
+  document.getElementById('brechVal').textContent = alpha + '°';
+  // Snell simplified: n1=1 (air), n2=1.33 (water): beta = asin(sin(alpha)/1.33)
+  const n2 = 1.33;
+  const sinBeta = Math.sin(alpha * Math.PI / 180) / n2;
+  const beta = Math.round(Math.asin(Math.min(sinBeta, 1)) * 180 / Math.PI);
+  document.getElementById('brechBeta').textContent = beta + '°';
+  const cx = 210, cy = 120;
+  const lenTop = 110, lenBot = 130;
+  const aRad = alpha * Math.PI / 180;
+  const bRad = beta * Math.PI / 180;
+  const inX = cx - lenTop * Math.sin(aRad);
+  const inY = cy - lenTop * Math.cos(aRad);
+  const outX = cx + lenBot * Math.sin(bRad);
+  const outY = cy + lenBot * Math.cos(bRad);
+  const refX = cx + lenTop * Math.sin(aRad);
+  const refY = cy - lenTop * Math.cos(aRad);
+  document.getElementById('bIn').setAttribute('x1', inX);
+  document.getElementById('bIn').setAttribute('y1', inY);
+  document.getElementById('bOut').setAttribute('x2', outX);
+  document.getElementById('bOut').setAttribute('y2', outY);
+  document.getElementById('bRef').setAttribute('x2', refX);
+  document.getElementById('bRef').setAttribute('y2', refY);
+}
+
+// ── LENS CALC ──
+function calcLens() {
+  const g = parseFloat(document.getElementById('calcG').value);
+  const b = parseFloat(document.getElementById('calcB').value);
+  const el = document.getElementById('calcResult');
+  if (!isNaN(g) && !isNaN(b) && g > 0 && b > 0) {
+    const f = (b * g) / (b + g);
+    el.textContent = 'f = ' + f.toFixed(2) + ' cm';
+    el.style.borderColor = 'var(--sky)';
+  } else {
+    el.textContent = 'f = ?';
+    el.style.borderColor = 'var(--line)';
+  }
+}
+
+// ── GLOSSAR FILTER ──
+function filterGlossar() {
+  const q = document.getElementById('glossSearch').value.toLowerCase();
+  document.querySelectorAll('.glossary-term-row').forEach(row => {
+    const t = row.textContent.toLowerCase();
+    row.classList.toggle('hidden', !t.includes(q));
+  });
+}
+
+// ── QUIZ ──
+const quizData = [
+  { q: "Was besagt das Reflexionsgesetz?", opts: ["Der Einfallswinkel ist immer 90°.", "Einfallswinkel α = Reflexionswinkel α', gemessen gegenüber dem Lot.", "Der Lichtstrahl wird beim Auftreffen gebrochen.", "Das Spiegelbild ist immer grösser als der Gegenstand."], correct: 1, expl: "Richtig! Das Reflexionsgesetz: α = α'. Beide Winkel werden gegenüber dem senkrechten Lot gemessen." },
+  { q: "Was ist ein virtuelles Bild?", opts: ["Ein Bild, das man auf einem Schirm auffangen kann.", "Ein Bild, das umgekehrt ist.", "Ein scheinbares Bild, das nicht wirklich existiert und nicht auf einem Schirm aufgefangen werden kann.", "Ein Bild, das nur in einem Hohlspiegel entsteht."], correct: 2, expl: "Ein virtuelles Bild entsteht, wenn das Gehirn Lichtstrahlen nach hinten verlängert. Es lässt sich nicht auf einem Schirm auffangen." },
+  { q: "Ein Lichtstrahl geht von Luft in Wasser über. Was passiert?", opts: ["Er wird vom Lot weg gebrochen, β > α.", "Er wird zum Lot hin gebrochen, β < α.", "Er wird gar nicht gebrochen.", "Er wird totalreflektiert."], correct: 1, expl: "Luft ist optisch dünner als Wasser. Beim Übergang in einen optisch dichteren Stoff wird der Strahl zum Lot hin gebrochen: β < α." },
+  { q: "Welche Bedingung muss für Totalreflexion erfüllt sein?", opts: ["Das Licht muss von Luft in Glas übergehen.", "Das Licht muss senkrecht auf die Grenzfläche treffen.", "Das Licht muss von einem optisch dichteren in einen dünneren Stoff übergehen, und der Einfallswinkel muss den Grenzwinkel überschreiten.", "Das Licht muss farbig sein."], correct: 2, expl: "Totalreflexion: dichter → dünner und α > Grenzwinkel. Dann kommt kein Licht mehr in den zweiten Stoff." },
+  { q: "Wozu nutzt man Glasfasern?", opts: ["Um Licht zu erzeugen.", "Um Licht durch Totalreflexion über grosse Distanzen zu leiten (Daten, Medizin).", "Um Farben zu mischen.", "Um Licht zu absorbieren."], correct: 1, expl: "Glasfasern leiten Licht (und Daten) durch Totalreflexion. Der Kern ist optisch dichter als der Mantel." },
+  { q: "Was unterscheidet Hohlspiegel und Wölbspiegel?", opts: ["Hohlspiegel zerstreuen Licht, Wölbspiegel sammeln es.", "Hohlspiegel (Konkavspiegel) sammeln Licht im Brennpunkt vor dem Spiegel; Wölbspiegel (Konvexspiegel) zerstreuen Licht in alle Richtungen.", "Beide haben keinen Brennpunkt.", "Der Unterschied liegt nur in der Farbe."], correct: 1, expl: "Hohlspiegel = Sammelspiegel (Brennpunkt vor dem Spiegel). Wölbspiegel = Zerstreuungsspiegel (virtueller Brennpunkt hinter dem Spiegel)." },
+  { q: "Die Linsengleichung lautet:", opts: ["f = g + b", "1/f = 1/g + 1/b", "f = g × b", "1/g = 1/f + 1/b"], correct: 1, expl: "1/f = 1/g + 1/b. Umgeformt: f = (b · g) / (b + g)." },
+  { q: "Was beobachtet man, wenn man einen Gegenstand im Wasser schräg betrachtet?", opts: ["Der Gegenstand erscheint tiefer als er ist.", "Der Gegenstand erscheint an seiner wirklichen Position.", "Der Gegenstand erscheint höher (angehoben) als er wirklich ist.", "Der Gegenstand verschwindet."], correct: 2, expl: "Optische Hebung: Licht vom Gegenstand wird beim Übergang Wasser→Luft vom Lot weg gebrochen. Das Gehirn sieht den Gegenstand dadurch höher." },
+  { q: "Welche sind die Grundfarben der additiven Farbmischung?", opts: ["Rot, Gelb, Blau", "Cyan, Magenta, Gelb", "Rot, Grün, Blau", "Weiss, Schwarz, Grau"], correct: 2, expl: "Additive Farbmischung (Licht): Grundfarben sind Rot, Grün, Blau (RGB). Alle Farben und Weiss entstehen durch Kombination dieser drei." },
+  { q: "Warum funkelt ein geschliffener Diamant in allen Farben?", opts: ["Weil er selbst leuchtet.", "Weil er weisses Licht durch Brechung in seine Spektralfarben zerlegt, da verschiedene Farben unterschiedlich stark gebrochen werden.", "Weil er alle Farben absorbiert.", "Weil er ein schlechter Spiegel ist."], correct: 1, expl: "Ein Diamant wirkt wie ein Prisma: Er bricht weisses Licht, wobei blaues Licht stärker gebrochen wird als rotes → Spektralfarben werden sichtbar." },
+];
+
+let quizIndex = 0, quizScore = 0;
+
+function renderQuestion() {
+  const q = quizData[quizIndex];
+  const pct = ((quizIndex + 1) / quizData.length * 100).toFixed(0);
+  document.getElementById('quizCounter').textContent = `Frage ${quizIndex+1} / ${quizData.length}`;
+  document.getElementById('quizProg').style.width = pct + '%';
+  const html = `<div class="quiz-question">
+    <div class="quiz-q-text">${quizIndex+1}. ${q.q}</div>
+    <div class="quiz-options">${q.opts.map((o,i) => `<button class="quiz-opt" onclick="checkAnswer(this,${i})">${o}</button>`).join('')}</div>
+    <div class="quiz-feedback" id="quizFb"></div>
+  </div>`;
+  document.getElementById('quizContainer').innerHTML = html;
+  document.getElementById('quizNext').style.display = 'none';
+}
+
+function checkAnswer(btn, idx) {
+  const q = quizData[quizIndex];
+  document.querySelectorAll('.quiz-opt').forEach(b => { b.classList.add('disabled'); b.onclick = null; });
+  const fb = document.getElementById('quizFb');
+  if (idx === q.correct) {
+    btn.classList.add('correct');
+    fb.textContent = '✓ Richtig! ' + q.expl;
+    fb.className = 'quiz-feedback show correct-fb';
+    quizScore++;
+    document.getElementById('quizScore').textContent = '✓ ' + quizScore;
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.quiz-opt')[q.correct].classList.add('correct');
+    fb.textContent = '✗ Falsch. ' + q.expl;
+    fb.className = 'quiz-feedback show wrong-fb';
+  }
+  document.getElementById('quizNext').style.display = 'block';
+}
+
+function nextQuestion() {
+  quizIndex++;
+  if (quizIndex < quizData.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('quizContainer').innerHTML = '';
+    document.getElementById('quizNext').style.display = 'none';
+    const pct = Math.round(quizScore / quizData.length * 100);
+    let emoji = pct >= 80 ? '🌟' : pct >= 60 ? '👍' : '📚';
+    document.getElementById('quizFinalText').textContent = `${emoji} ${quizScore} / ${quizData.length} richtig (${pct}%)`;
+    document.getElementById('quizFinalSub').textContent = pct >= 80 ? 'Ausgezeichnet – du kennst die wichtigsten optischen Konzepte!' : pct >= 60 ? 'Gut! Schau dir die Konzepte nochmals an.' : 'Wiederhole die Lernhilfe und versuche es nochmal!';
+    document.getElementById('quizEnd').style.display = 'block';
+    document.getElementById('quizProg').style.width = '100%';
+  }
+}
+
+function restartQuiz() {
+  quizIndex = 0; quizScore = 0;
+  document.getElementById('quizScore').textContent = '✓ 0';
+  document.getElementById('quizEnd').style.display = 'none';
+  renderQuestion();
+}
+
+// Init
+renderQuestion();
+updateReflection();
+updateRefraction();
+</script>
+</body>
+</html>
